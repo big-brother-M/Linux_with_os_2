@@ -8,7 +8,6 @@
 - [02-cpu-latency.md](02-cpu-latency.md): CPU 과점유 / Watchdog 종료 분석과 Before/After 터미널 증거
 - [03-deadlock.md](03-deadlock.md): Deadlock 무응답 분석과 Before/After 터미널 증거
 - [04-scheduling-analysis.md](04-scheduling-analysis.md): 로그 패턴 기반 스케줄링 알고리즘 추론
-- [05-evaluation-model-answers.md](05-evaluation-model-answers.md): 평가 항목 1~4 전체 모범답안
 
 세 장애 리포트의 `Evidence & Logs` 절에는 실제 iTerm2 캡처가 바로 표시되며, 각 이미지 아래에서 `run.env`, `monitor.csv`, `app.log`, `result.env` 원본도 열 수 있습니다.
 
