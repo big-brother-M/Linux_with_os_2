@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B1-2 시스템 장애 종합 분석 보고서</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 15mm 19mm;
+
+      @bottom-left {
+        content: "B1-2 시스템 장애 종합 분석";
+        color: #788391;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+        font-size: 7.5pt;
+        border-top: 1px solid #e2e7ee;
+        padding-top: 2mm;
+      }
+
+      @bottom-right {
+        content: "2026-06-30 · " counter(page) " / " counter(pages);
+        color: #788391;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+        font-size: 7.5pt;
+        border-top: 1px solid #e2e7ee;
+        padding-top: 2mm;
+      }
+    }
+
+    :root {
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d8dee8;
+      --panel: #f6f8fb;
+      --blue: #1e4f91;
+      --blue-soft: #eaf2fb;
+      --red: #a43a31;
+      --red-soft: #fff0ee;
+      --amber: #9a6414;
+      --amber-soft: #fff7e8;
+      --green: #23684a;
+      --green-soft: #edf8f3;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans CJK KR", "Malgun Gothic", Arial, sans-serif;
+      font-size: 9.4pt;
+      line-height: 1.55;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    h1, h2, h3, h4, p, ul, ol, table, figure, pre { margin-top: 0; }
+    h1, h2, h3, h4 { break-after: avoid; }
+    p { margin-bottom: 3mm; }
+    ul, ol { margin: 0 0 3.5mm 5.5mm; padding: 0; }
+    li { margin-bottom: 1.2mm; }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+      font-size: .9em;
+      background: #eef1f5;
+      border-radius: 3px;
+      padding: .15em .35em;
+    }
+
+    pre {
+      margin-bottom: 4mm;
+      padding: 3mm;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #111827;
+      color: #f4f7fb;
+      font: 7.7pt/1.43 "SFMono-Regular", Consolas, Menlo, monospace;
+      white-space: pre-wrap;
+      break-inside: avoid;
+    }
+
+    pre code { background: transparent; padding: 0; font-size: inherit; }
+
+    .cover {
+      min-height: 255mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      break-after: page;
+    }
+
+    .eyebrow {
+      margin-bottom: 7mm;
+      color: var(--blue);
+      font-size: 9pt;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .cover h1 {
+      margin-bottom: 7mm;
+      max-width: 155mm;
+      font-size: 29pt;
+      line-height: 1.18;
+      letter-spacing: -.035em;
+    }
+
+    .cover .subtitle {
+      max-width: 145mm;
+      margin-bottom: 12mm;
+      color: var(--muted);
+      font-size: 14pt;
+      line-height: 1.55;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: 35mm 1fr;
+      gap: 2.5mm 6mm;
+      width: 135mm;
+      padding-top: 7mm;
+      border-top: 2px solid var(--ink);
+      font-size: 9.5pt;
+    }
+
+    .cover-grid dt { color: var(--muted); font-weight: 700; }
+    .cover-grid dd { margin: 0; }
+
+    .chapter { break-before: page; }
+
+    .section-kicker {
+      margin-bottom: 2mm;
+      color: var(--blue);
+      font-size: 8pt;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 5mm;
+      padding-bottom: 3mm;
+      border-bottom: 2px solid var(--ink);
+      font-size: 20pt;
+      line-height: 1.24;
+      letter-spacing: -.025em;
+    }
+
+    h3 {
+      margin: 6mm 0 2.5mm;
+      color: #203a62;
+      font-size: 13pt;
+      line-height: 1.35;
+    }
+
+    h4 {
+      margin: 4.5mm 0 2mm;
+      font-size: 10.5pt;
+    }
+
+    .lead {
+      margin-bottom: 5mm;
+      color: #2f3a49;
+      font-size: 11pt;
+      line-height: 1.65;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 3mm;
+      margin: 0 0 5mm;
+      padding: 0;
+      list-style: none;
+    }
+
+    .summary-list li {
+      margin: 0;
+      padding: 3.5mm 4mm;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .summary-list strong { display: inline; }
+
+    .callout {
+      margin: 4mm 0;
+      padding: 3.5mm 4mm;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--blue);
+      border-radius: 5px;
+      background: var(--panel);
+      break-inside: avoid;
+    }
+
+    .callout.warning { border-left-color: var(--amber); background: var(--amber-soft); }
+    .callout.critical { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.good { border-left-color: var(--green); background: var(--green-soft); }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3mm;
+      margin-bottom: 5mm;
+    }
+
+    .metric {
+      min-height: 25mm;
+      padding: 3.5mm;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      break-inside: avoid;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 7.6pt;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .metric .value {
+      margin: 1mm 0 .8mm;
+      color: var(--blue);
+      font-size: 18pt;
+      font-weight: 800;
+      line-height: 1.12;
+    }
+
+    .metric .note { color: var(--muted); font-size: 7.8pt; }
+
+    table {
+      width: 100%;
+      margin-bottom: 5mm;
+      border-collapse: collapse;
+      font-size: 8.4pt;
+      line-height: 1.4;
+      break-inside: auto;
+    }
+
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+
+    th, td {
+      padding: 2.3mm 2.5mm;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #e9eef5;
+      color: #26364d;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    tbody tr:nth-child(even) td { background: #fafbfd; }
+    .nowrap { white-space: nowrap; }
+
+    .status {
+      display: inline-block;
+      padding: .5mm 1.5mm;
+      border-radius: 999px;
+      font-size: 7.2pt;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status.critical { color: #842c26; background: var(--red-soft); }
+    .status.high { color: #7c5112; background: var(--amber-soft); }
+    .status.stable { color: #1d6043; background: var(--green-soft); }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4mm;
+      margin: 4mm 0 5mm;
+      break-inside: avoid;
+    }
+
+    figure {
+      margin-bottom: 0;
+      padding: 2mm;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #fff;
+      break-inside: avoid;
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 3px;
+    }
+
+    figcaption {
+      padding: 2mm 1mm .5mm;
+      color: var(--muted);
+      font-size: 7.6pt;
+      line-height: 1.4;
+    }
+
+    .source-note {
+      margin-top: 2.5mm;
+      color: #6a7584;
+      font-size: 7.6pt;
+      line-height: 1.45;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5mm;
+      align-items: start;
+    }
+
+    .priority-list { counter-reset: priority; list-style: none; margin-left: 0; }
+    .priority-list li {
+      counter-increment: priority;
+      position: relative;
+      min-height: 12mm;
+      margin-bottom: 2.5mm;
+      padding: 2mm 2mm 2mm 13mm;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .priority-list li::before {
+      content: "P" counter(priority);
+      position: absolute;
+      left: 0;
+      top: 1.5mm;
+      width: 9mm;
+      padding: 1mm 0;
+      border-radius: 3px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 7.2pt;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .small { font-size: 8pt; color: var(--muted); }
+    .no-break { break-inside: avoid; }
+
+    @media screen {
+      body { max-width: 210mm; margin: 0 auto; padding: 15mm; box-shadow: 0 0 20px rgba(0,0,0,.1); }
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="eyebrow">Technical Incident Review</div>
+    <h1>B1-2 시스템 장애<br>종합 분석 보고서</h1>
+    <p class="subtitle">OOM, CPU 지연, 데드락 실험을 하나의 운영 관점으로 통합하고, 스케줄링 추론과 개선 우선순위를 정리했다.</p>
+    <dl class="cover-grid">
+      <dt>분석 대상</dt><dd><code>reports/</code> 내 Markdown 문서 6개</dd>
+      <dt>실험 환경</dt><dd>macOS ARM64 호스트, Docker Ubuntu 24.04, linux/arm64</dd>
+      <dt>증거 시점</dt><dd>2026-06-04</dd>
+      <dt>보고서 작성</dt><dd>2026-06-30</dd>
+      <dt>분석 방식</dt><dd>로그, <code>ps</code>, <code>top</code>, RSS/프로세스 스냅샷의 Before/After 비교</dd>
+    </dl>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Technical Summary</div>
+    <h2>가장 큰 운영 위험은 “살아 있지만 멈추는” 데드락이다</h2>
+    <p class="lead">세 장애 모두 설정 변경으로 증상을 늦추거나 우회할 수 있었지만, 근본 원인은 제거되지 않았다. OOM과 CPU 장애는 보호 로직이 프로세스를 종료해 재시작 가능성이 남는 반면, 데드락은 PID와 포트를 유지한 채 진행만 멈춰 단순 liveness 검사로 놓칠 수 있다.</p>
+
+    <ul class="summary-list">
+      <li><strong>OOM:</strong> Heap과 RSS가 계속 증가했고, <code>MEMORY_LIMIT</code> 상향은 생존 시간을 약 5.1초에서 17.1초로 늘렸을 뿐 150MB에서 다시 MemoryGuard 종료가 발생했다.</li>
+      <li><strong>CPU:</strong> <code>CPU_MAX_OCCUPY=100</code>에서 앱 내부 부하가 53.77%에 도달해 종료됐다. 10%로 낮추면 5-10% cooldown 사이클로 전환되어 90초 관찰 동안 생존했다.</li>
+      <li><strong>Deadlock:</strong> 두 워커가 A/B 자원을 반대 순서로 점유해 약 80초간 무진행 상태가 지속됐다. 멀티스레드를 끄면 작업은 완료되지만, 이는 동시성 경로를 비활성화한 회피책이다.</li>
+      <li><strong>스케줄링:</strong> A -&gt; B -&gt; C 순환과 40%, 80% 선점 패턴은 Round-Robin 시뮬레이션과 가장 잘 맞는다. 이는 애플리케이션 로그 기반 추론이며 OS 커널 스케줄러를 직접 입증하지는 않는다.</li>
+    </ul>
+
+    <div class="callout critical">
+      <p><strong>우선 결론:</strong> P0는 진행 상태 기반 readiness/heartbeat와 전역 락 순서 강제다. 그 다음 메모리 증가율 및 time-to-limit 감시, bounded collection/queue, CPU throttling과 워커 상한을 적용해야 한다.</p>
+    </div>
+
+    <h3>핵심 결과 비교</h3>
+    <table>
+      <thead>
+        <tr><th>장애</th><th>Before 관측</th><th>설정 변경 후</th><th>판정</th><th>근본 해결 방향</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="status high">HIGH</span><br><strong>OOM</strong></td>
+          <td>Heap 25 -&gt; 50MB, 최대 RSS 42,708KB, 약 5.1초 후 자체 종료</td>
+          <td>제한 128MB에서 최대 RSS 145,116KB, 약 17.1초 후 다시 자체 종료</td>
+          <td>제한 상향은 장애 지연</td>
+          <td>보유 객체/버퍼 수명 수정, 상한/TTL/LRU, heap profile</td>
+        </tr>
+        <tr>
+          <td><span class="status high">HIGH</span><br><strong>CPU</strong></td>
+          <td>앱 내부 부하 53.77%, 약 30초 후 임계치 위반 종료</td>
+          <td>5-10% cooldown 반복, 90초 관찰 동안 생존</td>
+          <td>낮은 목표값은 유효한 완화책</td>
+          <td>busy loop 제거, bounded worker/queue, cgroup quota</td>
+        </tr>
+        <tr>
+          <td><span class="status critical">CRITICAL</span><br><strong>Deadlock</strong></td>
+          <td>PID 생존, CPU 0.0%, RSS 13,772KB 고정, 약 80초 무진행</td>
+          <td>멀티스레드 비활성화 후 <code>All tasks completed</code></td>
+          <td>회피는 가능하나 동시성 이점 상실</td>
+          <td>전역 락 순서, timeout/rollback, actor/message passing</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="source-note">근거: 01-oom-crash.md, 02-cpu-latency.md, 03-deadlock.md, 04-scheduling-analysis.md, 05-evaluation-model-answers.md.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Finding 1 · Memory</div>
+    <h2>MemoryGuard는 호스트를 보호했지만 누수성 증가는 그대로 남았다</h2>
+    <p class="lead"><code>MEMORY_LIMIT</code>을 50MB에서 128MB로 올리자 프로세스 생존 시간은 약 3.4배 늘었지만 Heap과 RSS의 지속 증가가 유지되어 다시 종료됐다. 관측된 종료 주체는 커널 OOM Killer가 아니라 애플리케이션 내부 MemoryGuard다.</p>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="label">생존 시간</div><div class="value">5.1s -&gt; 17.1s</div><div class="note">제한 상향 후 약 12초 증가</div></div>
+      <div class="metric"><div class="label">최대 RSS</div><div class="value">42,708 -&gt; 145,116KB</div><div class="note">Before/After 관측 최대값</div></div>
+      <div class="metric"><div class="label">Heap 패턴</div><div class="value">+25MB / 3s</div><div class="note">로그상 계단형 지속 증가</div></div>
+    </div>
+
+    <h3>증거와 해석</h3>
+    <div class="figure-grid">
+      <figure>
+        <img src="../../reports/assets/oom-before-terminal.png" alt="OOM Before 터미널 증거">
+        <figcaption>Before: Heap 50MB 도달 직후 MemoryGuard가 PID 39를 자체 종료했다.</figcaption>
+      </figure>
+      <figure>
+        <img src="../../reports/assets/oom-after-terminal.png" alt="OOM After 터미널 증거">
+        <figcaption>After: 제한을 128MB로 올려도 Heap은 150MB까지 증가한 뒤 같은 보호 로직으로 종료됐다.</figcaption>
+      </figure>
+    </div>
+    <p>Heap 로그가 25MB 단위로 증가하고 RSS도 같은 방향으로 상승한다. 따라서 단발성 스파이크보다 장기 보관 객체, 무제한 캐시/버퍼 또는 해제되지 않는 컬렉션에 가까운 패턴이다. 다만 소스 코드와 heap dump가 없으므로 구체적인 할당 지점은 확정할 수 없다.</p>
+
+    <div class="two-col no-break">
+      <div>
+        <h3>임시 조치</h3>
+        <ul>
+          <li>서비스 메모리 예산에 맞춰 제한을 재설정한다.</li>
+          <li>RSS 증가율과 제한 도달 예상 시간으로 조기 경보한다.</li>
+          <li>cgroup <code>memory.max</code>로 호스트 장애 확산을 막는다.</li>
+          <li>재시작 정책과 종료 직전 진단 dump를 함께 둔다.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>근본 조치</h3>
+        <ul>
+          <li>bounded collection, cache TTL/LRU, queue backpressure를 적용한다.</li>
+          <li>대용량 데이터는 streaming으로 처리한다.</li>
+          <li>heap profile과 allocation stack으로 보유 경로를 찾는다.</li>
+          <li>회귀 테스트에서 steady-state RSS 상한을 검증한다.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="source-note">근거: 01-oom-crash.md의 Before/After 로그 및 표, 05-evaluation-model-answers.md의 질문 1-1, 1-2, 3-1, 4-1, 4-4.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Finding 2 · CPU</div>
+    <h2>낮은 CPU 목표값은 종료를 cooldown 동작으로 바꿨다</h2>
+    <p class="lead"><code>CPU_MAX_OCCUPY=100</code>에서는 앱 내부 부하가 53.77%까지 상승한 뒤 보호 임계치를 위반했다. 10%로 낮춘 실행은 10% 도달 시 cooldown, 5% 도달 시 재개를 반복하며 90초 관찰을 통과했다.</p>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="label">Before 내부 부하</div><div class="value">53.77%</div><div class="note">CpuWorker 로그 기준</div></div>
+      <div class="metric"><div class="label">OS 관측 최대값</div><div class="value">8.8%</div><div class="note">ps %CPU 기준, 의미가 다른 지표</div></div>
+      <div class="metric"><div class="label">After 관찰</div><div class="value">90s 생존</div><div class="note">5-10% cooldown 사이클</div></div>
+    </div>
+
+    <div class="callout warning">
+      <p><strong>지표 해석 주의:</strong> 53.77%는 <code>CpuWorker Current Load</code>라는 앱 내부 부하 모델이고, <code>ps/top %CPU</code>와 동일한 측정값이 아니다. OS 관측 최대값은 8.8%였다. 장애 판정은 앱 로그의 임계치 위반과 종료 상태를 기준으로 한다.</p>
+    </div>
+
+    <div class="figure-grid">
+      <figure>
+        <img src="../../reports/assets/cpu-before-terminal.png" alt="CPU Before 터미널 증거">
+        <figcaption>Before: 내부 부하가 53.77%까지 증가한 뒤 <code>CPU Threshold Violated</code>로 종료됐다.</figcaption>
+      </figure>
+      <figure>
+        <img src="../../reports/assets/cpu-after-terminal.png" alt="CPU After 터미널 증거">
+        <figcaption>After: 10%에서 cooldown이 작동했고 90초 증거 수집 종료 시점까지 자체 종료가 없었다.</figcaption>
+      </figure>
+    </div>
+
+    <h3>운영 의미</h3>
+    <p>CPU 제한값을 낮추는 것은 즉시 적용 가능한 완화책이지만, 작업량을 줄이는 근본 수정은 아니다. 같은 호스트의 tail latency 보호를 위해서는 busy loop를 event/blocking wait로 바꾸고, 워커 수와 큐 처리량을 제한하며, 지속 초과일 때만 종료하도록 throttle -&gt; graceful shutdown -&gt; restart 순서를 설계해야 한다.</p>
+    <p>After 로그 끝의 <code>Terminated</code>는 Watchdog 장애 종료가 아니라 evidence runner가 90초 수집 후 보낸 종료 신호다. 이 구분을 하지 않으면 완화 실험을 실패로 잘못 분류할 수 있다.</p>
+    <p class="source-note">근거: 02-cpu-latency.md의 로그/Before-After 표, 05-evaluation-model-answers.md의 질문 1-3, 1-4, 2-2, 3-2, 4-4.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Finding 3 · Concurrency</div>
+    <h2>AB/BA 락 순서가 PID 생존형 무응답을 만들었다</h2>
+    <p class="lead">Thread-1은 <code>Shared_Memory_A</code>를 보유한 채 <code>Socket_Pool_B</code>를 기다렸고, Thread-2는 반대로 B를 보유한 채 A를 기다렸다. 이후 약 80초 동안 PID는 존재했지만 CPU 0.0%, RSS 13,772KB, 추가 작업 로그 없음 상태가 유지됐다.</p>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="label">무진행 관찰</div><div class="value">약 80s</div><div class="note">마지막 BLOCKED 로그 이후</div></div>
+      <div class="metric"><div class="label">정체 자원</div><div class="value">CPU 0.0%</div><div class="note">RSS 13,772KB 고정</div></div>
+      <div class="metric"><div class="label">대기 고리</div><div class="value">A -&gt; B / B -&gt; A</div><div class="note">전형적인 circular wait</div></div>
+    </div>
+
+    <div class="callout critical">
+      <p><strong>탐지 위험:</strong> 단순 PID/포트 liveness는 통과할 수 있다. 실제 작업 완료 시각, 큐 진척도, progress heartbeat를 검사하는 readiness가 필요하다.</p>
+    </div>
+
+    <div class="figure-grid">
+      <figure>
+        <img src="../../reports/assets/deadlock-before-terminal.png" alt="Deadlock Before 터미널 증거">
+        <figcaption>Before: 두 워커가 상대 자원을 기다리는 <code>WAITING ... BLOCKED</code> 상태에서 멈췄다.</figcaption>
+      </figure>
+      <figure>
+        <img src="../../reports/assets/deadlock-after-terminal.png" alt="Deadlock After 터미널 증거">
+        <figcaption>After: 멀티스레드 경로를 끄자 Scheduler가 <code>All tasks completed</code>를 기록했다.</figcaption>
+      </figure>
+    </div>
+
+    <h3>네 가지 필요조건이 모두 성립한다</h3>
+    <table>
+      <thead><tr><th>조건</th><th>관측 근거</th><th>깨는 방법</th></tr></thead>
+      <tbody>
+        <tr><td>상호 배제</td><td>A와 B를 각각 한 스레드가 독점</td><td>공유 상태 축소 또는 단일 소유자</td></tr>
+        <tr><td>점유 대기</td><td>각 스레드가 한 락을 보유한 채 다른 락 대기</td><td>필요 락 일괄 획득, 실패 시 보유 락 해제</td></tr>
+        <tr><td>비선점</td><td>상대가 보유한 락을 강제로 회수하지 못함</td><td><code>try_lock(timeout)</code>과 rollback/backoff</td></tr>
+        <tr><td>순환 대기</td><td>Thread-1 -&gt; B -&gt; Thread-2 -&gt; A -&gt; Thread-1</td><td>모든 코드 경로에서 전역 락 순서 A -&gt; B 강제</td></tr>
+      </tbody>
+    </table>
+    <p class="source-note">근거: 03-deadlock.md의 락 획득/대기 로그 및 스냅샷, 05-evaluation-model-answers.md의 질문 1-5, 1-6, 2-3, 3-3, 3-4, 4-2.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Scheduling Inference</div>
+    <h2>실행 순서는 Round-Robin 모델과 가장 잘 맞는다</h2>
+    <p class="lead">정상 로그에서 Thread-A, B, C가 같은 진행 단위로 번갈아 실행되고 40%, 80% 지점에서 선점된다. 관측 순서는 A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C다.</p>
+
+    <table>
+      <thead><tr><th>후보</th><th>예상 패턴</th><th>관측과의 일치</th></tr></thead>
+      <tbody>
+        <tr><td>FCFS</td><td>A 완료 후 B, 그 다음 C</td><td>불일치. 각 작업이 완료 전 선점됨</td></tr>
+        <tr><td>Priority</td><td>특정 작업이 반복 우선되거나 더 많은 CPU slice 확보</td><td>근거 부족. 세 작업이 같은 진행 단위로 순환</td></tr>
+        <tr><td><strong>Round-Robin</strong></td><td>고정 순서와 유사한 time slice, 진행 상태 저장 후 다음 작업 전환</td><td><strong>가장 높은 일치</strong></td></tr>
+      </tbody>
+    </table>
+
+    <pre><code>40% 구간:  A(20,40) -&gt; B(20,40) -&gt; C(20,40)
+80% 구간:  A(60,80) -&gt; B(60,80) -&gt; C(60,80)
+완료 구간: A(100)   -&gt; B(100)   -&gt; C(100)</code></pre>
+
+    <div class="two-col no-break">
+      <div class="callout good">
+        <p><strong>장점:</strong> 작업 간 공정성이 높고 한 작업의 독점을 막아 웹/채팅/interactive agent처럼 응답성이 중요한 서비스에 적합하다.</p>
+      </div>
+      <div class="callout warning">
+        <p><strong>한계:</strong> time slice가 짧으면 context switch 비용이 커지고, 길면 응답성이 떨어진다. 처리량 중심 배치에는 더 단순한 정책이 유리할 수 있다.</p>
+      </div>
+    </div>
+    <p class="source-note">근거: 04-scheduling-analysis.md. 이 결론은 애플리케이션의 기록된 실행 순서에 대한 설명적 추론이며, 커널 수준 스케줄링 정책의 직접 측정 결과가 아니다.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Scope & Definitions</div>
+    <h2>로그와 표준 Linux 관측값을 분리해 해석했다</h2>
+    <p class="lead">분석은 제공 바이너리를 Docker에서 실행해 수집한 앱 로그, <code>monitor.csv</code>, <code>ps</code>, <code>top</code>, 프로세스/스레드 스냅샷에 한정된다. 바이너리 디컴파일이나 소스 코드 역분석은 수행하지 않았다.</p>
+
+    <table>
+      <thead><tr><th>용어/지표</th><th>보고서 내 의미</th><th>해석 주의</th></tr></thead>
+      <tbody>
+        <tr><td>Heap</td><td>앱 <code>MemoryWorker</code>가 기록한 내부 메모리 값</td><td>RSS와 동일한 측정값이 아님</td></tr>
+        <tr><td>RSS</td><td>프로세스가 실제 물리 메모리에 상주시킨 양(KB)</td><td>공유 페이지와 측정 시점 영향을 받음</td></tr>
+        <tr><td>VSZ</td><td>프로세스의 가상 주소 공간(KB)</td><td>실제 물리 메모리 사용량으로 해석하면 안 됨</td></tr>
+        <tr><td>CpuWorker Load</td><td>앱이 계산한 내부 부하 모델</td><td><code>ps/top %CPU</code>와 직접 비교 불가</td></tr>
+        <tr><td>liveness</td><td>PID/포트가 살아 있는지</td><td>데드락 상태도 통과할 수 있음</td></tr>
+        <tr><td>readiness/progress</td><td>실제 작업이 계속 완료되는지</td><td>데드락 탐지에 더 적합</td></tr>
+      </tbody>
+    </table>
+
+    <h3>실험 비교 기준</h3>
+    <table>
+      <thead><tr><th>케이스</th><th>Before</th><th>After</th><th>주요 판정 기준</th></tr></thead>
+      <tbody>
+        <tr><td>OOM</td><td><code>MEMORY_LIMIT=50</code></td><td><code>MEMORY_LIMIT=128</code></td><td>Heap/RSS 증가, 종료 로그, 생존 시간</td></tr>
+        <tr><td>CPU</td><td><code>CPU_MAX_OCCUPY=100</code></td><td><code>CPU_MAX_OCCUPY=10</code></td><td>앱 내부 부하, cooldown, 90초 생존</td></tr>
+        <tr><td>Deadlock</td><td><code>MULTI_THREAD_ENABLE=true</code></td><td><code>MULTI_THREAD_ENABLE=false</code></td><td>락 대기 순서, progress 정지, PID/자원 상태</td></tr>
+      </tbody>
+    </table>
+    <p class="source-note">환경/증거 범위: README.md. 세부 판정 기준: 01-03 장애 보고서와 05-evaluation-model-answers.md.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Method & Robustness</div>
+    <h2>Before/After 증거는 방향성을 지지하지만 반복성과 소스 수준 원인은 남아 있다</h2>
+    <h3>진단 방법</h3>
+    <ol>
+      <li>한 번에 핵심 환경변수 하나를 바꿔 Before/After 경로를 비교했다.</li>
+      <li>앱 로그의 시각과 <code>monitor.csv</code> 샘플을 대조해 종료 또는 무진행 구간을 확인했다.</li>
+      <li><code>kill -0</code>, <code>ps -p</code>, <code>top -b -n 1 -p PID</code>, <code>ps -L</code>로 프로세스/스레드 상태를 교차 확인했다.</li>
+      <li>OOM은 증가 추세와 종료 주체, CPU는 내부/OS 지표의 차이, 데드락은 PID 생존과 대기 그래프를 분리해 판정했다.</li>
+    </ol>
+
+    <h3>한계와 불확실성</h3>
+    <table>
+      <thead><tr><th>한계</th><th>영향</th><th>보강 방법</th></tr></thead>
+      <tbody>
+        <tr><td>각 조건의 반복 실행 수가 제시되지 않음</td><td>재현 확률과 분산을 정량화할 수 없음</td><td>조건별 최소 3회 반복, 성공률/시간 분포 기록</td></tr>
+        <tr><td>소스 코드와 heap/thread dump 부재</td><td>구체적인 allocation/lock 위치 확정 불가</td><td>heap profile, allocation stack, thread dump, lock graph 수집</td></tr>
+        <tr><td>짧은 관찰 구간</td><td>장기 steady state와 희귀 경쟁 조건 평가 제한</td><td>장시간 soak/stress/fault-injection 테스트</td></tr>
+        <tr><td>앱 내부 CPU 지표 정의 미공개</td><td>53.77%의 물리적 의미를 OS 사용률로 환산 불가</td><td>계산식/샘플링 주기 공개, cgroup 지표와 동시 기록</td></tr>
+        <tr><td>Round-Robin은 로그 기반 추론</td><td>실제 커널 스케줄러 정책으로 일반화 불가</td><td>스케줄러 구현 또는 trace 기반 검증</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><strong>주장 수준:</strong> OOM, CPU 종료, 데드락 상태는 제공 로그와 프로세스 관측으로 직접 확인한 기술적 진단이다. 누수의 정확한 코드 위치, 내부 CPU 부하 산식, 커널 스케줄러 정책은 추가 증거가 필요한 미확정 영역이다.</p>
+    </div>
+    <p class="source-note">근거: README.md의 분석 범위, 05-evaluation-model-answers.md의 명령어 흐름 및 “미션을 다시 한다면” 항목.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Recommended Actions</div>
+    <h2>탐지 공백을 먼저 닫고 자원 수명과 동시성 구조를 수정해야 한다</h2>
+    <ol class="priority-list">
+      <li><strong>진행 상태 기반 readiness와 heartbeat를 추가한다.</strong><br><span class="small">PID/포트가 살아 있어도 일정 시간 작업 완료가 없으면 트래픽에서 제외하고 thread dump를 남긴다.</span></li>
+      <li><strong>락 순서를 전역 규칙 A -&gt; B로 통일한다.</strong><br><span class="small">중첩 임계구역을 줄이고, <code>try_lock(timeout)</code> 실패 시 보유 락을 해제한 뒤 backoff한다. 가능하면 actor/message queue로 공유 상태를 단일 소유화한다.</span></li>
+      <li><strong>메모리 증가율과 time-to-limit를 운영 지표로 만든다.</strong><br><span class="small">RSS 절대값뿐 아니라 기울기, N회 연속 상승, GC 후 저점 상승, cgroup <code>memory.current/events/max</code>를 수집한다.</span></li>
+      <li><strong>메모리와 CPU 작업량에 구조적 상한을 둔다.</strong><br><span class="small">bounded collection/cache/queue, TTL/LRU, backpressure, bounded worker, rate limit, CPU quota를 적용한다.</span></li>
+      <li><strong>보호 동작을 단계화한다.</strong><br><span class="small">경고 -&gt; throttle/cooldown -&gt; 진단 dump -&gt; graceful shutdown -&gt; 강제 재시작 순서로 설계하고 종료 사유를 명확히 기록한다.</span></li>
+      <li><strong>재현과 증거 생성을 자동화한다.</strong><br><span class="small">조건별 3회 이상 반복, 바이너리 hash/환경/PID/exit code/monotonic timeline 저장, Before/After 표 자동 생성을 CI에 넣는다.</span></li>
+    </ol>
+
+    <h3>OOM과 데드락이 동시에 보일 때의 대응 순서</h3>
+    <ol>
+      <li>메모리 긴급도를 수 초 내 확인하면서 PID, 마지막 로그, <code>ps -L</code>, 짧은 thread dump를 보존한다.</li>
+      <li>가용 메모리가 위험하면 트래픽을 우회하고 문제 프로세스를 종료해 호스트를 보호한다.</li>
+      <li>정상 인스턴스를 제한된 트래픽으로 재기동한다.</li>
+      <li>보존한 dump로 락 순환과 메모리 보유 관계를 분석한다.</li>
+    </ol>
+    <p class="source-note">근거: 05-evaluation-model-answers.md의 질문 4-1 - 4-5와 세 장애 보고서의 Workaround & Verification.</p>
+  </section>
+
+  <section class="chapter">
+    <div class="section-kicker">Further Questions</div>
+    <h2>다음 검증이 근본 수정의 완료 조건이다</h2>
+    <ul>
+      <li><strong>메모리:</strong> 어떤 allocation stack과 객체 소유 경로가 steady-state 회수를 방해하는가?</li>
+      <li><strong>CPU:</strong> <code>CpuWorker Current Load</code>의 계산식, 샘플링 주기, 보호 임계치가 실제 cgroup CPU 소비와 어떻게 연결되는가?</li>
+      <li><strong>동시성:</strong> A/B 외에 역순 획득이 가능한 락 조합이 더 있는가? 정적 lock-order 검사로 전체 경로를 커버할 수 있는가?</li>
+      <li><strong>복원력:</strong> 보호 종료 후 supervisor/Kubernetes 재시작, readiness 제외, 트래픽 복귀까지의 총 복구 시간은 얼마인가?</li>
+      <li><strong>반복성:</strong> 각 조건을 최소 3회 반복했을 때 생존 시간, 최대 RSS, 무진행 탐지 시간의 분포는 안정적인가?</li>
+      <li><strong>SLO:</strong> 실제 서비스의 메모리 예산, CPU quota, 최대 무진행 시간은 무엇이며 어떤 값에서 알림/격리/재시작할 것인가?</li>
+    </ul>
+
+    <div class="callout good">
+      <p><strong>완료 기준:</strong> 설정값을 바꿨을 때가 아니라, 누수 없이 RSS가 안정화되고, CPU가 quota 내에서 지속 처리되며, 멀티스레드 경로에서도 반복 스트레스 테스트 동안 lock-order 위반과 progress 정지가 없을 때 근본 해결로 판정한다.</p>
+    </div>
+
+    <h3>분석에 사용한 Markdown</h3>
+    <table>
+      <thead><tr><th>문서</th><th>보고서 내 역할</th></tr></thead>
+      <tbody>
+        <tr><td><code>README.md</code></td><td>환경, 증거 세트, 분석 범위</td></tr>
+        <tr><td><code>01-oom-crash.md</code></td><td>OOM 사실, 로그, Before/After, 조치</td></tr>
+        <tr><td><code>02-cpu-latency.md</code></td><td>CPU 사실, 내부/OS 지표, Before/After, 조치</td></tr>
+        <tr><td><code>03-deadlock.md</code></td><td>락 대기 그래프, 무진행 증거, Before/After, 조치</td></tr>
+        <tr><td><code>04-scheduling-analysis.md</code></td><td>Round-Robin 추론과 장단점</td></tr>
+        <tr><td><code>05-evaluation-model-answers.md</code></td><td>지표 해석, 진단 명령, 운영 원리, 개선 우선순위, 한계 보강</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>
