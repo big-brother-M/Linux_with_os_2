@@ -1,7 +1,5 @@
 # B1-2 시스템 장애 분석 리포트
 
-이 폴더는 `proj.md` 요구사항에 맞춰 작성한 GitHub Issue 형식의 장애 분석 리포트 모음입니다.
-
 ## 리포트 목록
 
 - [01-oom-crash.md](01-oom-crash.md): Memory Leak / OOM Crash 분석과 Before/After 터미널 증거
