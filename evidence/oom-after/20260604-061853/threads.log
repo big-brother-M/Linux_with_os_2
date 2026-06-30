@@ -1,0 +1,40 @@
+[2026-06-04 06:18:53]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 R    50.0  0.0 agent-leak-app-
+
+[2026-06-04 06:18:54]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     5.6  0.0 agent-leak-app-
+
+[2026-06-04 06:18:55]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     2.8  0.0 agent-leak-app-
+
+[2026-06-04 06:18:57]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     1.8  0.0 agent-leak-app-
+
+[2026-06-04 06:18:58]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     1.4  0.0 agent-leak-app-
+
+[2026-06-04 06:18:59]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     1.1  0.0 agent-leak-app-
+
+[2026-06-04 06:19:00]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     0.9  0.0 agent-leak-app-
+
+[2026-06-04 06:19:01]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     0.8  0.0 agent-leak-app-
+
+[2026-06-04 06:19:03]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     0.7  0.0 agent-leak-app-
+
+[2026-06-04 06:19:04]
+    PID     TID STAT %CPU %MEM COMMAND
+     29      29 S     0.6  0.0 agent-leak-app-
+

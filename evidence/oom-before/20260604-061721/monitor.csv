@@ -1,0 +1,6 @@
+timestamp,pid,stat,cpu_percent,mem_percent,rss_kb,vsz_kb,nlwp,command
+2026-06-04 06:17:21,29,R,0.0,0.0,1760,2796,1,agent-leak-app-
+2026-06-04 06:17:22,29,S,6.5,0.0,1828,2800,1,agent-leak-app-
+2026-06-04 06:17:23,29,S,3.2,0.0,1828,2800,1,agent-leak-app-
+2026-06-04 06:17:25,29,S,2.1,0.0,1828,2800,1,agent-leak-app-
+2026-06-04 06:17:26,29,S,1.6,0.0,1828,2800,1,agent-leak-app-

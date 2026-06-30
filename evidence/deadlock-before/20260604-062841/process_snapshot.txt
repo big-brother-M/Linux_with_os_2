@@ -1,0 +1,13 @@
+[2026-06-04 06:30:11] process snapshot
+UID          PID    PPID  C STIME TTY          TIME CMD
+root          23       1  0 06:28 ?        00:00:00 runuser -u agent -- env AGENT_HOME=/tmp/b1-2-agent-deadlock-before-20260604-062841 AGENT_PORT=15034 AGENT_UPLOAD_DIR=/tmp/b1-2-agent-deadlock-before-20260604-062841/upload_files AGENT_KEY_PATH=/tmp/b1-2-agent-deadlock-before-20260604-062841/api_keys AGENT_LOG_DIR=/tmp/b1-2-agent-deadlock-before-20260604-062841/logs MEMORY_LIMIT=512 CPU_MAX_OCCUPY=10 MULTI_THREAD_ENABLE=true /work/agent-app-leak/agent-leak-app-arm64
+agent         33      23  0 06:28 ?        00:00:00 /work/agent-app-leak/agent-leak-app-arm64
+agent         38      33  0 06:28 ?        00:00:00 /work/agent-app-leak/agent-leak-app-arm64
+
+    PID    PPID STAT %CPU %MEM   RSS    VSZ NLWP     ELAPSED COMMAND
+     38      33 SNl   0.0  0.1 13772 169872    3       01:29 agent-leak-app-
+
+    PID     TID STAT %CPU %MEM COMMAND
+     38      38 SNl   0.0  0.1 agent-leak-app-
+     38     120 SNl   0.0  0.1 agent-leak-app-
+     38     121 SNl   0.0  0.1 agent-leak-app-

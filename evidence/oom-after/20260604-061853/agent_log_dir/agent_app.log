@@ -1,0 +1,7 @@
+2026-06-04 06:18:53,531 [INFO] [SafetyGuard] Process priority lowered (nice=10).
+2026-06-04 06:18:53,531 [INFO] Agent listening at port 15034
+2026-06-04 06:18:55,547 [INFO] [CpuWorker] Started. Maximum CPU Limit: 100%
+2026-06-04 06:18:55,547 [INFO] [CpuWorker] Current Load: 5.00%
+2026-06-04 06:18:58,668 [INFO] [CpuWorker] Current Load: 9.73%
+2026-06-04 06:19:01,789 [INFO] [CpuWorker] Current Load: 12.61%
+2026-06-04 06:19:04,904 [INFO] [CpuWorker] Current Load: 14.25%

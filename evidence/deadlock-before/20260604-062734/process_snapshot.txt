@@ -1,0 +1,6 @@
+[2026-06-04 06:28:07] process snapshot
+UID          PID    PPID  C STIME TTY          TIME CMD
+
+    PID    PPID STAT %CPU %MEM   RSS    VSZ NLWP     ELAPSED COMMAND
+
+    PID     TID STAT %CPU %MEM COMMAND
